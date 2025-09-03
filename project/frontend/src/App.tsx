@@ -5,6 +5,9 @@ import { queryMistral } from './services/mistralService';
 import { getWebContainer, mountFiles, runCommand, startDevServer } from './services/webcontainer';
 import Editor from '@monaco-editor/react';
 
+// API calls use direct backend URLs for production
+const BACKEND_URL = 'https://bckend-for-i-coder-production.up.railway.app';
+
 function App() {
   const [state, setState] = useState<EditorState>(() => {
     const initialFiles = createInitialFiles();
@@ -47,7 +50,7 @@ function App() {
   const saveFiles = async (clearFirst: boolean = false) => {
     if (state.files.length > 0) {
       try {
-        await fetch('/api/save-preview', {
+        await fetch(`${BACKEND_URL}/api/save-preview`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ files: state.files, clearFirst })
@@ -116,7 +119,7 @@ function App() {
 
   const syncFiles = async () => {
     try {
-      await fetch('/api/sync-files', {
+      await fetch(`${BACKEND_URL}/api/sync-files`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ files: state.files })
@@ -131,7 +134,7 @@ function App() {
       // Sync files before executing command
       await syncFiles();
       
-      const response = await fetch('/api/execute', {
+      const response = await fetch(`${BACKEND_URL}/api/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
